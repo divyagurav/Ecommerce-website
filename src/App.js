@@ -1,14 +1,23 @@
-import React from "react";
-import "./App.css";
-import AvailableProduct from "./Components/AvailableProduct";
-import Header from "./Components/Header";
+
+import './App.css';
+import Header from './Components/Navbar/Navbar';
+import { BrowserRouter as Router } from 'react-router-dom';
+
+import CartProvider from './Components/Store/CartProvider'
+import Routers from './Components/Routers/Router';
+import Footer from './Components/Layout/Footer';
+
+
 
 function App() {
   return (
-    <React.Fragment>
+    <Router>
+      <CartProvider>
       <Header></Header>
-      <AvailableProduct />
-    </React.Fragment>
+      <Routers></Routers>
+      <Footer></Footer>
+     </CartProvider>
+    </Router>
   );
 }
 
