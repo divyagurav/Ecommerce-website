@@ -7,7 +7,7 @@ function App() {
   return (
     <React.Fragment>
       <Header></Header>
-      <AvailableProduct></AvailableProduct>
+      <AvailableProduct />
     </React.Fragment>
   );
 }

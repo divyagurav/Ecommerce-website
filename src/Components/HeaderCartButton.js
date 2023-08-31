@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Badge } from "react-bootstrap";
-const HeaderCartButton = () => {
+import Cart from "./Cart/Cart";
+const HeaderCartButton = (props) => {
+  const [showCart, setShowCart] = useState(false);
+  const showCartHandler = () => {
+    setShowCart(true);
+  };
+
+  const hideCartHandler = () => {
+    setShowCart(false);
+  };
   return (
-    <Button variant="dark" className="border border-3 border-info">
-      Cart
-      <Badge bg="secondary ms-2">0</Badge>
-    </Button>
+    <React.Fragment>
+      <Button
+        variant="dark"
+        className="border border-3 border-info"
+        onClick={showCartHandler}
+      >
+        Cart
+        <Badge bg="secondary ms-3">0</Badge>
+      </Button>
+      {showCart && <Cart onHideCart={hideCartHandler}></Cart>}
+    </React.Fragment>
   );
 };
 
