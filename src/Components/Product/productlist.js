@@ -31,21 +31,18 @@ const Productlist = () => {
     },
   ];
 
-
   return (
     <div className="container">
       <h1>Products</h1>
       <div className="product-list">
         {productsArr.map((product, index) => (
           <div key={index}>
-            <Products product={product} ></Products>
+            <Products product={product}></Products>
           </div>
         ))}
-        </div>
       </div>
+    </div>
   );
 };
 
 export default Productlist;
-
-;
