@@ -19,7 +19,7 @@ const Header = (props) => {
               ABOUT
             </Nav.Link>
           </Nav>
-          <HeaderCartButton />
+          <HeaderCartButton onClick={props.onShow} />
         </Container>
       </Navbar>
 

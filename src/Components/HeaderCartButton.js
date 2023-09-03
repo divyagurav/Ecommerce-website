@@ -1,26 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Button, Badge } from "react-bootstrap";
-import Cart from "./Cart/Cart";
-const HeaderCartButton = (props) => {
-  const [showCart, setShowCart] = useState(false);
-  const showCartHandler = () => {
-    setShowCart(true);
-  };
+import CartContext from "./cart-context";
 
-  const hideCartHandler = () => {
-    setShowCart(false);
-  };
+const HeaderCartButton = (props) => {
+  const cartCtx = useContext(CartContext);
+
+  const numberOfCartItems = cartCtx.items.reduce((curNumber, item) => {
+    return curNumber + item.amount;
+  }, 0);
   return (
     <React.Fragment>
       <Button
         variant="dark"
         className="border border-3 border-info"
-        onClick={showCartHandler}
+        onClick={props.onClick}
       >
         Cart
-        <Badge bg="secondary ms-3">0</Badge>
+        <Badge bg="secondary ms-3">{numberOfCartItems}</Badge>
       </Button>
-      {showCart && <Cart onHideCart={hideCartHandler}></Cart>}
     </React.Fragment>
   );
 };

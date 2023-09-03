@@ -37,6 +37,7 @@ const AvailableProduct = (props) => {
           {productArr.map((item) => {
             return (
               <Product
+                id={item.id}
                 title={item.title}
                 price={item.price}
                 imageUrl={item.imageUrl}
