@@ -6,6 +6,10 @@ import CartContext from "../../Store/CartContext";
 const Cart = ({ onCartShow }) => {
   const { items, totalAmount } = useContext(CartContext);
 
+  function submitHandler() {
+    alert("Thanks for the Purchase");
+  }
+
   return (
     <section id="cart" className="container">
       <h2>CART</h2>
@@ -28,7 +32,7 @@ const Cart = ({ onCartShow }) => {
           <span className="total-value">${totalAmount}</span>
         </span>
       </div>
-      <button className="purchase-btn" type="button">
+      <button className="purchase-btn" type="button" onClick={submitHandler}>
         PURCHASE
       </button>
     </section>

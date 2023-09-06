@@ -3,4 +3,6 @@ export const RoutePath = {
   Store: "/store",
   About: "/about",
   CantactUs: "/cantactus",
+  Login: "/Login",
+  ProductPage: "/store/:product",
 };

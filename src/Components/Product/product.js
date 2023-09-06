@@ -1,9 +1,18 @@
 import React from "react";
 import { useContext } from "react";
 import CartContext from "../Store/CartContext";
+import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../Routers/Const";
 
 const Products = ({ product }) => {
-  const { addItem, items, totalAmount } = useContext(CartContext);
+  const { addItem, items, totalAmount, selectedItemHandler } =
+    useContext(CartContext);
+  const navagete = useNavigate();
+
+  const productClickHandler = () => {
+    selectedItemHandler(product);
+    navagete(RoutePath.ProductPage);
+  };
 
   const addCartItem = () => {
     const newItem = { ...product, amount: parseInt(1), id: Math.random() };
@@ -12,7 +21,7 @@ const Products = ({ product }) => {
   console.log(items, totalAmount);
   return (
     <div id="music-content">
-      <div id="album1">
+      <div id="album1" onClick={productClickHandler}>
         <h3>{product.title}</h3>
         <div className="image-container">
           <img className="prod-images" src={product.imageUrl} alt="" />

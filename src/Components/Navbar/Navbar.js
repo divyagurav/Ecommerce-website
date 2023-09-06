@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { Navbar } from "./const";
 import Cart from "./Cart/cart";
+import CartContext from "../Store/CartContext";
 const Header = () => {
+  const cartCtx = useContext(CartContext);
+
+  const numberOfCartItems = cartCtx.items.reduce((curNumber, item) => {
+    return curNumber + item.amount;
+  }, 0);
   const [showCart, setShowCart] = useState(false);
 
   const cartShowHandler = () => {
@@ -22,7 +28,7 @@ const Header = () => {
         ))}
 
         <a href="#cart" className="cart-holder" onClick={cartShowHandler}>
-          cart<span className="cart-number">0</span>
+          cart<span className="cart-number">{numberOfCartItems}</span>
         </a>
         {showCart && <Cart onCartShow={cartShowHandler}></Cart>}
       </header>

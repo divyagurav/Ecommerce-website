@@ -12,6 +12,11 @@ export const Navbar = [
     path: "/about",
   },
   {
+    name: "Login",
+    path: "/Login",
+  },
+
+  {
     name: "CantactUs",
     path: "/cantactus",
   },

@@ -3,12 +3,12 @@ import { useContext } from "react";
 import CartContext from "../../Store/CartContext";
 
 const CartItem = ({ item }) => {
-  const { addItem, removeItem } = useContext(CartContext);
+  const { removeItem } = useContext(CartContext);
 
-  const addCartItem = () => {
-    // const newItem ={...product,amount:parseInt(1),id:Math.random()}
-    // addItem(newItem)
-  };
+  //   const addCartItem = () => {
+  //     // const newItem ={...product,amount:parseInt(1),id:Math.random()}
+  //     // addItem(newItem)
+  //   };
 
   const removeCartItem = () => {
     removeItem(item);
