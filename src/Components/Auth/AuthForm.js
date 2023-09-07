@@ -1,14 +1,19 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useContext } from "react";
+
+import AuthContext from "../Store/auth-context";
 import classes from "./AuthForm.module.css";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+
+  const navigate = useNavigate();
+
+  const authCtx = useContext(AuthContext);
+
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -21,63 +26,44 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
 
     setIsLoading(true);
+    let url;
     if (isLogin) {
-      fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key= AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => {
-        setIsLoading(false);
-
-        if (res.ok) {
-          navigate("/store");
-          console.log("successfully logged in");
-        } else {
-          return res.json().then((data) => {
-            let errorMessage = data.error.message;
-            alert(errorMessage);
-          });
-        }
-      });
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD61trb_TQ27ZLrT4ybyyFKWkht-DaUa0o";
     } else {
-      fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => {
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD61trb_TQ27ZLrT4ybyyFKWkht-DaUa0o";
+    }
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
         setIsLoading(false);
         if (res.ok) {
-          //...
+          return res.json();
         } else {
           return res.json().then((data) => {
-            let errorMessage = data.error.message;
-
-            // if (data && data.error && data.error.message) {
-            //   errorMessage = data.error.message;
-            // }
-            alert(errorMessage);
+            let errorMessage = "Authentication failed!";
+            throw new Error(errorMessage);
           });
         }
+      })
+      .then((data) => {
+        authCtx.login(data.idToken);
+        localStorage.setItem("email", enteredEmail);
+        navigate("/store");
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    }
   };
 
   return (
@@ -86,22 +72,22 @@ const AuthForm = () => {
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
-          <input type="email" id="email" ref={emailInputRef} required />
+          <input type="email" id="email" required ref={emailInputRef} />
         </div>
         <div className={classes.control}>
           <label htmlFor="password">Your Password</label>
           <input
             type="password"
             id="password"
-            ref={passwordInputRef}
             required
+            ref={passwordInputRef}
           />
         </div>
         <div className={classes.actions}>
           {!isLoading && (
             <button>{isLogin ? "Login" : "Create Account"}</button>
           )}
-          {isLoading && <p>sending request...</p>}
+          {isLoading && <p>Sending request...</p>}
           <button
             type="button"
             className={classes.toggle}
@@ -116,3 +102,12 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
+
+// let url;
+// if (isLogin) {
+//   url =
+//     "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key= AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8";
+// } else {
+//   url =
+//     "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8";
+// }

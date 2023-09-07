@@ -1,16 +1,20 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-import { Navbar } from "./const";
 import Cart from "./Cart/cart";
-import CartContext from "../Store/CartContext";
-const Header = () => {
-  const cartCtx = useContext(CartContext);
+import AuthContext from "../Store/auth-context";
+import CartContext from "../Store/auth-context";
 
-  const numberOfCartItems = cartCtx.items.reduce((curNumber, item) => {
-    return curNumber + item.amount;
-  }, 0);
+const Header = () => {
   const [showCart, setShowCart] = useState(false);
+
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { emptyCart, items } = useContext(CartContext);
+
+  const logoutHandler = () => {
+    logout();
+    emptyCart();
+  };
 
   const cartShowHandler = () => {
     setShowCart((preShowcart) => !showCart);
@@ -18,18 +22,41 @@ const Header = () => {
   return (
     <div className="navbar">
       <header className="header">
-        {Navbar.map((Element) => (
-          <div className="links">
-            <Link to={Element.path} key={Element.name}>
+        <div className="links">
+          <Link to="/" key="Home">
+            {" "}
+            Home{" "}
+          </Link>
+          <Link to="/store" key="Store">
+            {" "}
+            Store{" "}
+          </Link>
+          <Link to="/about" key="About">
+            {" "}
+            About{" "}
+          </Link>
+          {!isLoggedIn && (
+            <Link to="/login" key="Login">
               {" "}
-              {Element.name}{" "}
+              Login{" "}
             </Link>
-          </div>
-        ))}
-
-        <a href="#cart" className="cart-holder" onClick={cartShowHandler}>
-          cart<span className="cart-number">{numberOfCartItems}</span>
-        </a>
+          )}
+          <Link to="/cantactus" key="Cantact Us">
+            {" "}
+            Cantact Us{" "}
+          </Link>
+          {isLoggedIn && (
+            <Link to="/" key="logout" onClick={logoutHandler}>
+              {" "}
+              Logout{" "}
+            </Link>
+          )}
+        </div>
+        {isLoggedIn && (
+          <a href="#cart" className="cart-holder" onClick={cartShowHandler}>
+            cart<span className="cart-number">{items.length}</span>
+          </a>
+        )}
         {showCart && <Cart onCartShow={cartShowHandler}></Cart>}
       </header>
       <h1>The Generics</h1>
