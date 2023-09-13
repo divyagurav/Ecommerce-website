@@ -1,81 +1,84 @@
-import { useState, useRef, useContext } from "react";
+import React from "react";
 
+import axios from "axios";
+import { useState, useRef, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import AuthContext from "../Store/auth-context";
+
 import classes from "./AuthForm.module.css";
-import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
+  const [request, setRequest] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+  const confirmPasswordInputRef = useRef();
 
-  const navigate = useNavigate();
+  const authctx = useContext(AuthContext);
 
-  const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
-  const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const switchAuthModeHandler = () => {
+  const switchingHandler = () => {
     setIsLogin((prevState) => !prevState);
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
-
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
-    setIsLoading(true);
-    let url;
-    if (isLogin) {
-      url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD61trb_TQ27ZLrT4ybyyFKWkht-DaUa0o";
-    } else {
-      url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD61trb_TQ27ZLrT4ybyyFKWkht-DaUa0o";
-    }
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify({
-        email: enteredEmail,
-        password: enteredPassword,
-        returnSecureToken: true,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        setIsLoading(false);
-        if (res.ok) {
-          return res.json();
-        } else {
-          return res.json().then((data) => {
-            let errorMessage = "Authentication failed!";
-            throw new Error(errorMessage);
-          });
+    if (!isLogin) {
+      const enteredConfirmPassword = confirmPasswordInputRef.current.value;
+      if (enteredPassword === enteredConfirmPassword) {
+        try {
+          setRequest(true);
+          axios.post(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8",
+            {
+              email: enteredEmail,
+              password: enteredPassword,
+              returnSecureToken: true,
+            }
+          );
+          setRequest(false);
+          alert("SignUp Successfully");
+          console.log("User has successfully signed up");
+        } catch (error) {
+          console.log(error);
+          setRequest(false);
         }
-      })
-      .then((data) => {
-        authCtx.login(data.idToken);
-        localStorage.setItem("email", enteredEmail);
-        navigate("/store");
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+      }
+    } else {
+      try {
+        setRequest(true);
+        let response = await axios.post(
+          "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8",
+          {
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }
+        );
+        authctx.login(response.data.idToken, response.data.email);
+        setRequest(false);
+        history.replace("/store");
+      } catch (error) {
+        alert(error.response.data.error.message);
+        setRequest(false);
+      }
+    }
   };
-
   return (
     <section className={classes.auth}>
-      <h1>{isLogin ? "Login" : "Sign Up"}</h1>
+      <h1>{isLogin ? "Login" : "SignUp"}</h1>
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
-          <label htmlFor="email">Your Email</label>
+          <label htmlFor="email">Email</label>
           <input type="email" id="email" required ref={emailInputRef} />
         </div>
         <div className={classes.control}>
-          <label htmlFor="password">Your Password</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -83,31 +86,41 @@ const AuthForm = () => {
             ref={passwordInputRef}
           />
         </div>
+        {!isLogin ? (
+          <div className={classes.control}>
+            <label htmlFor="password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              required
+              ref={confirmPasswordInputRef}
+            />
+          </div>
+        ) : (
+          ""
+        )}
         <div className={classes.actions}>
-          {!isLoading && (
-            <button>{isLogin ? "Login" : "Create Account"}</button>
+          {!request ? (
+            <button type="submit">{isLogin ? "login" : "SignUp"}</button>
+          ) : (
+            "Sending request.."
           )}
-          {isLoading && <p>Sending request...</p>}
-          <button
-            type="button"
-            className={classes.toggle}
-            onClick={switchAuthModeHandler}
-          >
-            {isLogin ? "Create new account" : "Login with existing account"}
-          </button>
         </div>
+        <button
+          type="button"
+          style={{
+            background: "none",
+            border: "none",
+            marginTop: "0.5em",
+            color: "white",
+          }}
+          onClick={switchingHandler}
+        >
+          {isLogin ? "Create an account" : "Already have an account? Login"}
+        </button>
       </form>
     </section>
   );
 };
 
 export default AuthForm;
-
-// let url;
-// if (isLogin) {
-//   url =
-//     "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key= AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8";
-// } else {
-//   url =
-//     "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbgw2oP9cuP_SsnS1MgpRSyKJiYDXYyS8";
-// }

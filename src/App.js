@@ -1,23 +1,54 @@
+import React, { useContext } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
 import "./App.css";
-import Header from "./Components/Navbar/Navbar";
-import { BrowserRouter as Router } from "react-router-dom";
-
-import CartProvider from "./Components/Store/CartProvider";
-import Routers from "./Components/Routers/Router";
-import Footer from "./Components/Layout/Footer";
-import { AuthContextProvider } from "./Components/Store/auth-context";
+import Footer from "./Components/Footer/Footer";
+import MainNaviGation from "./Components/Header/MainNaviGation";
+import AboutUs from "./Pages/AboutUs";
+import Home from "./Pages/Home";
+import StorePage from "./Pages/Store";
+import ContactUs from "./Pages/ContactUs";
+import ProductDetails from "./Pages/ProductDetails";
+import Login from "./Pages/Login";
+import AuthContext from "./Components/Store/auth-context";
 
 function App() {
+  const authctx = useContext(AuthContext);
   return (
-    <Router>
-      <CartProvider>
-        <AuthContextProvider>
-          <Header></Header>
-          <Routers></Routers>
-          <Footer></Footer>
-        </AuthContextProvider>
-      </CartProvider>
-    </Router>
+    <div>
+      <header>
+        <MainNaviGation />
+      </header>
+      <main>
+        <Switch>
+          <Route path="/" exact>
+            {authctx.isLoggedIn && <Redirect to="/store" />}
+            {!authctx.isLoggedIn && <Redirect to="/login" />}
+          </Route>
+          <Route path="/store" exact>
+            {authctx.isLoggedIn && <StorePage />}
+            {!authctx.isLoggedIn && <Redirect to="/login" />}
+          </Route>
+          <Route path="/aboutUs">
+            <AboutUs />
+          </Route>
+          <Route path="/home">
+            <Home />
+          </Route>
+          <Route path="/contactUs">
+            <ContactUs />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/store/:productId">
+            <ProductDetails />
+          </Route>
+        </Switch>
+      </main>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   );
 }
 
